@@ -1,0 +1,7 @@
+Date,Merchant,Description,Amount,Category,Ethical_Score,Date_dt
+2026-04-13,Farmers Market,Weekly veggies,45.5,Local Food,7,2026-04-13
+2026-04-14,UberEats,Late dinner,32.0,Food Delivery,3,2026-04-14
+2026-04-15,City Metro,Monthly pass,120.0,Public Transport,8,2026-04-15
+2026-04-15,H&M,New jacket,55.0,Fast Fashion,2,2026-04-15
+2026-04-15,zepto,groceeries,0.01,Other,5,2026-04-15
+2026-04-15,zepto,groceeries,100.0,Other,5,
