@@ -370,11 +370,20 @@ def init_state():
         }
 
 def add_dummy_data():
+    now = datetime.now()
     dummy_data = [
-        {"Date": (datetime.now() - timedelta(days=2)).strftime('%Y-%m-%d'), "Merchant": "Farmers Market", "Description": "Weekly veggies", "Amount": 45.50, "Category": "Local Food", "Ethical_Score": 7},
-        {"Date": (datetime.now() - timedelta(days=1)).strftime('%Y-%m-%d'), "Merchant": "UberEats", "Description": "Late dinner", "Amount": 32.00, "Category": "Food Delivery", "Ethical_Score": 3},
-        {"Date": datetime.now().strftime('%Y-%m-%d'), "Merchant": "City Metro", "Description": "Monthly pass", "Amount": 120.00, "Category": "Public Transport", "Ethical_Score": 8},
-        {"Date": datetime.now().strftime('%Y-%m-%d'), "Merchant": "H&M", "Description": "New jacket", "Amount": 55.00, "Category": "Fast Fashion", "Ethical_Score": 2},
+        {"Date": (now - timedelta(days=6)).strftime('%Y-%m-%d'), "Merchant": "Whole Foods", "Description": "Organic Groceries", "Amount": 85.20, "Category": "Local Food", "Ethical_Score": 8},
+        {"Date": (now - timedelta(days=5)).strftime('%Y-%m-%d'), "Merchant": "Starbucks", "Description": "Morning Coffee", "Amount": 5.50, "Category": "Coffee Shops", "Ethical_Score": 4},
+        {"Date": (now - timedelta(days=5)).strftime('%Y-%m-%d'), "Merchant": "Steam", "Description": "Game purchase", "Amount": 29.99, "Category": "Entertainment", "Ethical_Score": 6},
+        {"Date": (now - timedelta(days=4)).strftime('%Y-%m-%d'), "Merchant": "City Metro", "Description": "Commute", "Amount": 2.50, "Category": "Public Transport", "Ethical_Score": 9},
+        {"Date": (now - timedelta(days=4)).strftime('%Y-%m-%d'), "Merchant": "UberEats", "Description": "Late night pizza", "Amount": 42.00, "Category": "Food Delivery", "Ethical_Score": 3},
+        {"Date": (now - timedelta(days=3)).strftime('%Y-%m-%d'), "Merchant": "Patagonia", "Description": "Eco Jacket", "Amount": 120.00, "Category": "Local Food", "Ethical_Score": 9},
+        {"Date": (now - timedelta(days=3)).strftime('%Y-%m-%d'), "Merchant": "Local Cafe", "Description": "Lunch", "Amount": 18.50, "Category": "Local Food", "Ethical_Score": 7},
+        {"Date": (now - timedelta(days=2)).strftime('%Y-%m-%d'), "Merchant": "H&M", "Description": "T-shirt", "Amount": 15.00, "Category": "Fast Fashion", "Ethical_Score": 2},
+        {"Date": (now - timedelta(days=2)).strftime('%Y-%m-%d'), "Merchant": "Blue Bottle", "Description": "Specialty Coffee", "Amount": 7.00, "Category": "Coffee Shops", "Ethical_Score": 6},
+        {"Date": (now - timedelta(days=1)).strftime('%Y-%m-%d'), "Merchant": "Netflix", "Description": "Monthly Sub", "Amount": 15.99, "Category": "Entertainment", "Ethical_Score": 6},
+        {"Date": (now - timedelta(days=1)).strftime('%Y-%m-%d'), "Merchant": "Bus Ticket", "Description": "Regional trip", "Amount": 12.00, "Category": "Public Transport", "Ethical_Score": 8},
+        {"Date": now.strftime('%Y-%m-%d'), "Merchant": "Farmers Market", "Description": "Fresh Berries", "Amount": 12.50, "Category": "Local Food", "Ethical_Score": 9},
     ]
     st.session_state['transactions'] = pd.DataFrame(dummy_data)
     save_data()
