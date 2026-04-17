@@ -46,3 +46,4 @@ Date,Merchant,Description,Amount,Category,Ethical_Score,Date_dt
 2026-04-17,uber,transport,0.01,Public Transport,8,
 2026-04-17,uber,transport,20.0,Public Transport,8,
 2026-04-17,blinkit,groceries,200.0,Public Transport,8,
+2026-04-17,amazon,supplements,200.0,Public Transport,8,

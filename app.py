@@ -530,7 +530,7 @@ def render_goals_section(df):
 
         if goal['category'] == "All":
             current_val = get_current_month_spending(df)
-            # For spending, show how much is USED. For savings, show how much is SAVED.
+
         elif is_savings:
             current_val = goal['saved']
         else:
@@ -907,18 +907,57 @@ def render_dashboard(df):
         avg_score = df['Ethical_Score'].mean() if not df.empty else 0
         st.session_state['avg_score'] = avg_score # Store for Social
         
-        # Top Metrics
-        c1, c2, c3 = st.columns(3)
+        # Top Metrics — Custom Stat Cards
+        current_month_spent = get_current_month_spending(df) + st.session_state.get('total_deductions', 0)
+        delta_goal = float(budget - current_month_spent)
+        delta_color = "var(--accent)" if delta_goal >= 0 else "var(--bio-orange)"
+        
+        budget_pct = min(100, (current_month_spent / budget) * 100) if budget > 0 else 0
+        score_pct = (avg_score / 10) * 100
+
+        c1, c2 = st.columns(2)
         with c1:
-            # Deduction Logic for Savings
-            current_month_spent = get_current_month_spending(df) + st.session_state.get('total_deductions', 0)
-            delta_goal = float(budget - current_month_spent)
-            st.metric(label="Selected Month Expenses", value=f"${current_month_spent:.2f}", delta=f"${delta_goal:.2f} remaining")
+            st.markdown(f"""
+                <div class="metric-card" style="border-top: 4px solid var(--accent);">
+                    <div style="display: flex; justify-content: space-between; align-items: flex-start;">
+                        <div>
+                            <div style="font-size: 0.85rem; color: var(--text-secondary); text-transform: uppercase; letter-spacing: 2px; margin-bottom: 8px;">Monthly Expenses</div>
+                            <div style="font-size: 2.5rem; font-weight: 800; letter-spacing: -1px;">${current_month_spent:.2f}</div>
+                        </div>
+                        <div style="font-size: 2.5rem; opacity: 0.3;">💸</div>
+                    </div>
+                    <div style="margin-top: 16px;">
+                        <div style="height: 8px; background: rgba(255,255,255,0.06); border-radius: 4px; overflow: hidden;">
+                            <div style="width: {budget_pct}%; height: 100%; background: {delta_color}; border-radius: 4px; transition: width 0.8s ease; box-shadow: 0 0 12px {delta_color};"></div>
+                        </div>
+                        <div style="display: flex; justify-content: space-between; margin-top: 8px; font-size: 0.8rem;">
+                            <span style="color: {delta_color}; font-weight: 700;">${abs(delta_goal):.2f} {'remaining' if delta_goal >= 0 else 'over'}</span>
+                            <span style="color: var(--text-secondary);">of ${budget:.0f} budget</span>
+                        </div>
+                    </div>
+                </div>
+            """, unsafe_allow_html=True)
         with c2:
-            st.metric(label="Impact Score", value=f"{avg_score:.1f} / 10", delta="Average Ethical Score")
-        with c3:
-            cf = max(0, 100 - (avg_score * 10))
-            st.metric(label="Estimated Carbon Footprint", value=f"{cf:.1f} kg CO₂", delta="Lower is better!", delta_color="inverse")
+            st.markdown(f"""
+                <div class="metric-card" style="border-top: 4px solid var(--bio-purple);">
+                    <div style="display: flex; justify-content: space-between; align-items: flex-start;">
+                        <div>
+                            <div style="font-size: 0.85rem; color: var(--text-secondary); text-transform: uppercase; letter-spacing: 2px; margin-bottom: 8px;">Impact Score</div>
+                            <div style="font-size: 2.5rem; font-weight: 800; letter-spacing: -1px;">{avg_score:.1f}<span style="font-size: 1.2rem; color: var(--text-secondary);"> / 10</span></div>
+                        </div>
+                        <div style="font-size: 2.5rem; opacity: 0.3;">🌿</div>
+                    </div>
+                    <div style="margin-top: 16px;">
+                        <div style="height: 8px; background: rgba(255,255,255,0.06); border-radius: 4px; overflow: hidden;">
+                            <div style="width: {score_pct}%; height: 100%; background: var(--bio-purple); border-radius: 4px; transition: width 0.8s ease; box-shadow: 0 0 12px var(--bio-purple);"></div>
+                        </div>
+                        <div style="display: flex; justify-content: space-between; margin-top: 8px; font-size: 0.8rem;">
+                            <span style="color: var(--bio-purple); font-weight: 700;">Average Ethical Score</span>
+                            <span style="color: var(--text-secondary);">{len(df)} transactions</span>
+                        </div>
+                    </div>
+                </div>
+            """, unsafe_allow_html=True)
         
         # Advanced Goals Section (New)
         render_goals_section(df)
@@ -981,36 +1020,13 @@ def render_dashboard(df):
     with tab4:
         render_social_tab()
 
-    # Recent Transactions Traces (Custom UI)
-    st.markdown("#### 📜 Recent Signal Traces")
+    # Advanced Ledger Editor
     if not df.empty:
-        for idx, row in df.sort_values('Date', ascending=False).head(5).iterrows():
-            badge_class = "badge-emerald"
-            if row['Category'] == "Entertainment": badge_class = "badge-purple"
-            elif row['Category'] in ["Fast Fashion", "Food Delivery"]: badge_class = "badge-orange"
-            elif row['Category'] == "Savings": badge_class = "badge-blue"
-            
-            st.markdown(f"""
-                <div class="metric-card" style="padding: 15px 25px; margin-bottom: 12px; display: flex; justify-content: space-between; align-items: center; border-left: 4px solid var(--accent);">
-                    <div>
-                        <span class="category-badge {badge_class}">{row['Category']}</span>
-                        <strong style="margin-left: 12px; font-size: 1.1rem;">{row['Merchant']}</strong>
-                        <div style="font-size: 0.85rem; color: var(--text-secondary); margin-top: 6px;">{row['Description']}</div>
-                    </div>
-                    <div style="text-align: right;">
-                        <div style="font-weight: 800; font-size: 1.25rem; color: var(--accent);">${row['Amount']:.2f}</div>
-                        <div style="font-size: 0.75rem; color: var(--text-secondary);">{row['Date']}</div>
-                    </div>
-                </div>
-            """, unsafe_allow_html=True)
-        
-        with st.expander("Advanced Ledger Editor"):
-            # (Data editor logic stays inside expander)
+        with st.expander("📝 Advanced Ledger Editor", expanded=True):
             display_df = df.copy()
             display_df = display_df[['Date', 'Merchant', 'Description', 'Category', 'Amount', 'Ethical_Score']].sort_values('Date', ascending=False)
             edited_df = st.data_editor(display_df, key="ledger_v2", use_container_width=True)
             if not edited_df.equals(display_df):
-                # Update logic (abbreviated here, but I'll keep the full logic)
                 for index, r in edited_df.iterrows():
                     orig_match = (df['Date'] == r['Date']) & (df['Merchant'] == r['Merchant']) & (df['Amount'] == r['Amount'])
                     if any(orig_match):
